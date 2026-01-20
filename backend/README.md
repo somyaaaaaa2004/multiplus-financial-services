@@ -20,11 +20,9 @@ Backend API server for Multiplus Financial Services platform built with Node.js,
 4. Choose your repository
 5. Railway will automatically detect Node.js and start building
 
-**Note:** This project includes a `railway.json` configuration file in the root directory that specifies:
-- **Build Command:** `npm install`
-- **Start Command:** `npm start`
-
-However, **you must still set the Root Directory** in Railway dashboard for monorepo setup.
+**Note:** This project includes configuration files to ensure proper Railway deployment:
+- `railway.json` - Forces Railway to use Nixpacks (not Docker)
+- `nixpacks.toml` - Explicitly configures Node.js, npm, and backend directory
 
 #### 2. Configure Root Directory (Required for Monorepo)
 
@@ -36,12 +34,18 @@ However, **you must still set the Root Directory** in Railway dashboard for mono
 4. Set it to: `backend`
 5. Click **"Update"**
 
+**Alternative:** The `nixpacks.toml` file handles the backend directory automatically, but setting Root Directory in Railway dashboard is recommended for clarity.
+
 This ensures Railway:
 - ✅ Only deploys the backend folder (ignores frontend)
-- ✅ Looks for `package.json` in the backend folder
-- ✅ Runs build/start commands from the backend directory
+- ✅ Uses Nixpacks builder (not Docker)
+- ✅ Installs Node.js 18.x and npm automatically
+- ✅ Runs `npm install` in the backend directory
+- ✅ Starts with `npm start` from backend directory
 
-The `railway.json` file specifies the build and start commands that Railway will use once the root directory is set.
+**Configuration Files:**
+- `railway.json` - Forces Nixpacks builder (prevents Docker detection)
+- `nixpacks.toml` - Specifies Node.js version, install commands, and start command
 
 #### 3. Configure Environment Variables
 
@@ -99,21 +103,47 @@ CORS_ORIGIN=https://your-app.vercel.app,https://www.yourdomain.com,https://stagi
 - Use any MySQL provider (PlanetScale, AWS RDS, DigitalOcean, etc.)
 - Add connection details as environment variables
 
-#### 5. Deploy
+#### 5. Verify Build Configuration
+
+Before deploying, ensure Railway will use Nixpacks (not Docker):
+
+1. In Railway dashboard, click on your service
+2. Go to **Settings** tab
+3. Check **"Builder"** setting - it should show **"Nixpacks"** (not Dockerfile)
+4. If it shows Dockerfile, Railway detected a Dockerfile in your repo
+   - Check for any `Dockerfile` in root or backend folder
+   - Delete it if found (or move to a different location if needed elsewhere)
+   - Railway will then use Nixpacks automatically
+
+**Configuration Files:**
+- `railway.json` - Forces Railway to use Nixpacks builder (prevents Docker detection)
+- `nixpacks.toml` - Explicitly configures Node.js 18.x, npm, and backend directory
+
+#### 6. Deploy
 
 Railway will automatically:
-- Read `railway.json` configuration (sets root to `backend` folder)
-- Install dependencies (`npm install` in backend folder)
-- Run start script (`npm start` from backend folder)
+- Read `railway.json` (forces Nixpacks builder, prevents Docker)
+- Read `nixpacks.toml` (configures Node.js 18.x and npm installation)
+- Set root directory to `backend` (from dashboard setting)
+- Install Node.js 18.x and npm automatically
+- Run `npm install` in backend directory
+- Run `npm start` from backend directory (executes `node server.js`)
 - Expose your service on a public URL
 
-**Configuration File (`railway.json`):**
-The `railway.json` file in the project root ensures Railway:
-- ✅ Only deploys the backend (ignores frontend folder)
-- ✅ Uses correct build and start commands
-- ✅ Works seamlessly in a monorepo setup
+**What happens during build:**
+1. ✅ Railway detects `railway.json` → Forces Nixpacks builder (not Docker)
+2. ✅ Railway reads `nixpacks.toml` → Installs Node.js 18.x and npm
+3. ✅ Railway uses Root Directory setting → Changes to `backend` folder
+4. ✅ Runs `npm install` → Installs all dependencies from `backend/package.json`
+5. ✅ Runs `npm start` → Executes `node server.js` from backend folder
 
-#### 6. Verify Deployment
+**Troubleshooting:**
+- If build fails with "npm: command not found" → Railway is using Docker instead of Nixpacks
+- Solution: Verify no Dockerfile exists in root or backend folder
+- Ensure `railway.json` has `"builder": "NIXPACKS"`
+- Check Railway Settings → Builder shows "Nixpacks"
+
+#### 7. Verify Deployment
 
 1. Check Railway logs for successful startup
 2. Visit your health endpoint: `https://your-app.railway.app/api/health`
@@ -200,6 +230,20 @@ POST /api/financial-health/score
 - Verify DB credentials are correct
 - Check if database allows connections from Railway IPs
 - Ensure database is running
+
+**Build fails with "npm: command not found":**
+- Railway is trying to use Docker instead of Nixpacks
+- **Solution 1:** Check if Dockerfile exists in root or backend folder - delete it
+- **Solution 2:** Verify `railway.json` exists in root with `"builder": "NIXPACKS"`
+- **Solution 3:** In Railway dashboard → Settings → Builder should show "Nixpacks"
+- **Solution 4:** Ensure `nixpacks.toml` exists in root directory
+- Railway will use Nixpacks automatically if no Dockerfile is found
+
+**Build fails - Root directory issues:**
+- Ensure Root Directory is set to `backend` in Railway Settings
+- Verify `backend/package.json` exists
+- Check that `backend/server.js` exists
+- Railway should detect backend folder automatically with root directory setting
 
 **CORS errors:**
 - Verify CORS_ORIGIN matches your frontend domain exactly
