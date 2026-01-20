@@ -64,7 +64,7 @@ exports.register = async (req, res, next) => {
         email: user.email
       },
       process.env.JWT_SECRET || 'your-secret-key',
-      { expiresIn: '1d' }
+      { expiresIn: process.env.JWT_EXPIRE || '1d' }
     );
 
     // Return success response
@@ -122,7 +122,7 @@ exports.login = async (req, res, next) => {
         email: user.email
       },
       process.env.JWT_SECRET || 'your-secret-key',
-      { expiresIn: '1d' }
+      { expiresIn: process.env.JWT_EXPIRE || '1d' }
     );
 
     // Return success response (password is never included)

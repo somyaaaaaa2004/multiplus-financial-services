@@ -10,22 +10,20 @@ const app = express();
 const getCorsOrigin = () => {
   const env = process.env.NODE_ENV || 'development';
   
-  // In production, use CORS_ORIGIN env var or default to wildcard
-  if (env === 'production') {
-    return process.env.CORS_ORIGIN 
-      ? process.env.CORS_ORIGIN.split(',').map(origin => origin.trim())
-      : '*';
-  }
-  
-  // In development, always include localhost:3000, plus any from CORS_ORIGIN
-  const origins = ['http://localhost:3000'];
-  
+  // If CORS_ORIGIN is set, use it (supports multiple origins separated by commas)
   if (process.env.CORS_ORIGIN) {
-    const envOrigins = process.env.CORS_ORIGIN.split(',').map(origin => origin.trim());
-    origins.push(...envOrigins);
+    return process.env.CORS_ORIGIN.split(',').map(origin => origin.trim());
   }
   
-  return origins;
+  // If CORS_ORIGIN is missing:
+  // - Development: allow all origins (*)
+  // - Production: default to wildcard (less secure, should set CORS_ORIGIN in production)
+  if (env === 'development') {
+    return '*';
+  }
+  
+  // Production without CORS_ORIGIN - default to wildcard (not recommended)
+  return '*';
 };
 
 const corsOptions = {
@@ -86,9 +84,8 @@ app.use((req, res, next) => {
 app.get('/api/health', (req, res) => {
   res.status(200).json({
     success: true,
-    message: 'Multiplus Financial Services API is running',
-    timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV || 'development'
+    message: 'API running',
+    time: new Date().toISOString()
   });
 });
 

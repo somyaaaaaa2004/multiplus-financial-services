@@ -26,8 +26,8 @@ const startServer = async () => {
       console.log(`🌍 Environment: ${NODE_ENV}`);
       console.log(`🔌 Host: ${HOST}`);
       console.log(`🔌 Port: ${PORT}`);
-      console.log(`📡 Health: http://${HOST}:${PORT}/api/health`);
-      console.log(`🔗 API Base: http://${HOST}:${PORT}/api`);
+      console.log(`📡 Health: /api/health`);
+      console.log(`🔗 API Base: /api`);
       console.log('='.repeat(60) + '\n');
     });
 

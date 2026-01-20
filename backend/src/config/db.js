@@ -28,10 +28,10 @@ if (missingVars.length > 0) {
 }
 
 const pool = mysql.createPool({
-  host: process.env.DB_HOST || 'localhost',
-  user: process.env.DB_USER || 'root',
-  password: process.env.DB_PASSWORD || '',
-  database: process.env.DB_NAME || 'multiplus_financial',
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
   waitForConnections: true,
   connectionLimit: parseInt(process.env.DB_CONNECTION_LIMIT) || 10,
   queueLimit: 0,
@@ -54,9 +54,9 @@ const testConnection = async () => {
     const connection = await pool.getConnection();
     const timestamp = new Date().toISOString();
     console.log(`✅ [${timestamp}] MySQL database connected successfully`);
-    console.log(`   Database: ${process.env.DB_NAME || 'multiplus_financial'}`);
-    console.log(`   Host: ${process.env.DB_HOST || 'localhost'}`);
-    console.log(`   User: ${process.env.DB_USER || 'root'}`);
+    console.log(`   Database: ${process.env.DB_NAME}`);
+    console.log(`   Host: ${process.env.DB_HOST}`);
+    console.log(`   User: ${process.env.DB_USER}`);
     connection.release();
     isConnected = true;
     connectionError = null;
@@ -83,13 +83,13 @@ const testConnection = async () => {
       console.error('\n💡 Possible causes:');
       console.error('   - Database does not exist');
       console.error('   - Incorrect DB_NAME');
-      console.error(`   - Create database: CREATE DATABASE ${process.env.DB_NAME || 'multiplus_financial'};`);
+      console.error(`   - Create database: CREATE DATABASE ${process.env.DB_NAME};`);
     }
     
     console.error('\n📋 Current configuration:');
-    console.error(`   DB_HOST: ${process.env.DB_HOST || 'localhost'}`);
-    console.error(`   DB_USER: ${process.env.DB_USER || 'root'}`);
-    console.error(`   DB_NAME: ${process.env.DB_NAME || 'multiplus_financial'}`);
+    console.error(`   DB_HOST: ${process.env.DB_HOST}`);
+    console.error(`   DB_USER: ${process.env.DB_USER}`);
+    console.error(`   DB_NAME: ${process.env.DB_NAME}`);
     console.error(`   DB_PASSWORD: ${process.env.DB_PASSWORD ? '***' : '(not set)'}`);
     console.error('=' .repeat(60) + '\n');
     
