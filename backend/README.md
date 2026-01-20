@@ -20,7 +20,30 @@ Backend API server for Multiplus Financial Services platform built with Node.js,
 4. Choose your repository
 5. Railway will automatically detect Node.js and start building
 
-#### 2. Configure Environment Variables
+**Note:** This project includes a `railway.json` configuration file in the root directory that specifies:
+- **Build Command:** `npm install`
+- **Start Command:** `npm start`
+
+However, **you must still set the Root Directory** in Railway dashboard for monorepo setup.
+
+#### 2. Configure Root Directory (Required for Monorepo)
+
+**This step is essential** - Railway needs to know to deploy only the backend folder:
+
+1. Click on your project in Railway dashboard
+2. Go to **Settings** tab
+3. Scroll to **"Root Directory"** section
+4. Set it to: `backend`
+5. Click **"Update"**
+
+This ensures Railway:
+- ✅ Only deploys the backend folder (ignores frontend)
+- ✅ Looks for `package.json` in the backend folder
+- ✅ Runs build/start commands from the backend directory
+
+The `railway.json` file specifies the build and start commands that Railway will use once the root directory is set.
+
+#### 3. Configure Environment Variables
 
 In Railway dashboard, go to your project → Variables tab and add:
 
@@ -64,7 +87,7 @@ CORS_ORIGIN=https://your-app.vercel.app,https://www.yourdomain.com,https://stagi
 - Credentials enabled for authenticated requests
 - Preflight OPTIONS requests are cached for 24 hours
 
-#### 3. Provision MySQL Database
+#### 4. Provision MySQL Database
 
 **Option A: Railway MySQL Plugin**
 1. In Railway project, click "+ New"
@@ -76,14 +99,21 @@ CORS_ORIGIN=https://your-app.vercel.app,https://www.yourdomain.com,https://stagi
 - Use any MySQL provider (PlanetScale, AWS RDS, DigitalOcean, etc.)
 - Add connection details as environment variables
 
-#### 4. Deploy
+#### 5. Deploy
 
 Railway will automatically:
-- Install dependencies (`npm install`)
-- Run start script (`npm start`)
+- Read `railway.json` configuration (sets root to `backend` folder)
+- Install dependencies (`npm install` in backend folder)
+- Run start script (`npm start` from backend folder)
 - Expose your service on a public URL
 
-#### 5. Verify Deployment
+**Configuration File (`railway.json`):**
+The `railway.json` file in the project root ensures Railway:
+- ✅ Only deploys the backend (ignores frontend folder)
+- ✅ Uses correct build and start commands
+- ✅ Works seamlessly in a monorepo setup
+
+#### 6. Verify Deployment
 
 1. Check Railway logs for successful startup
 2. Visit your health endpoint: `https://your-app.railway.app/api/health`
