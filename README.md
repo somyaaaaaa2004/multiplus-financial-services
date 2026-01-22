@@ -27,4 +27,12 @@ This project focuses on improving the digital experience for customers with a re
 ---
 
 ## 📂 Project Structure
-
+multiplus-financial-service/
+│── src/
+│── public/
+│── assets/
+│── components/
+│── pages/
+│── backend/
+│── database/
+│── README.md
